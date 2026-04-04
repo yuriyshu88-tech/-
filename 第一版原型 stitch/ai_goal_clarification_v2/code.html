@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#134231",
+                    "on-surface": "#191c1c",
+                    "on-surface-variant": "#5c635f",
+                    "surface": "#ffffff",
+                    "outline-variant": "#e0e3e1",
+                    "secondary-container": "#f0f2f1",
+                    "primary-container": "#e8f0eb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "0.75rem",
+                    "xl": "1.25rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "sans-serif"],
+                    "body": ["Inter", "sans-serif"],
+                    "label": ["Inter", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #ffffff;
+            color: #191c1c;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Ensure one-screen feel for the designated device */
+        }
+        /* Custom thin progress bar */
+        .progress-bar-thin {
+            height: 2px;
+        }
+        /* Airy touch transitions */
+        .option-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Prevent layout shift on taller screens like iPhone 17 Pro Max */
+        .main-container {
+            height: 100dvh;
+            max-height: 989px;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<div class="main-container px-8 pt-14 pb-10 max-w-[460px] mx-auto">
+<!-- Navigation -->
+<header class="flex justify-between items-center mb-10">
+<button class="w-10 h-10 flex items-center justify-start text-on-surface hover:opacity-60 transition-opacity">
+<span class="material-symbols-outlined text-2xl" data-icon="close">close</span>
+</button>
+<h1 class="font-headline font-bold text-lg tracking-tight text-on-surface">时律</h1>
+<div class="w-10"></div>
+</header>
+<!-- Progress Indicator - Minimalist -->
+<div class="mb-14">
+<div class="flex justify-between items-baseline mb-3">
+<div class="flex items-baseline gap-1">
+<span class="font-headline font-extrabold text-3xl text-on-surface">01</span>
+<span class="text-on-surface-variant/40 font-medium text-sm">/ 05</span>
+</div>
+<span class="font-label text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant/60">AI Questionnaire</span>
+</div>
+<div class="progress-bar-thin w-full bg-secondary-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/5 transition-all duration-700 ease-out"></div>
+</div>
+</div>
+<!-- Content Area -->
+<div class="flex-grow flex flex-col">
+<!-- Question Section -->
+<section class="mb-10">
+<h2 class="font-headline font-bold text-[28px] text-on-surface leading-[1.2] mb-4 tracking-tight">
+                你的目标执行频率是？
+            </h2>
+<p class="text-on-surface-variant leading-relaxed text-[15px] font-normal max-w-[90%]">
+                选择最适合您当前生活节奏的频率，我们将为您智能规划阶段性目标。
+            </p>
+</section>
+<!-- Options: Clean, Airy Cards -->
+<div class="space-y-3 mb-8">
+<!-- Active Option -->
+<button class="option-card w-full flex items-center justify-between p-5 rounded-xl bg-white border border-primary ring-1 ring-primary/20 shadow-sm">
+<div class="text-left">
+<h3 class="font-headline font-bold text-[17px] text-primary mb-0.5">每天</h3>
+<p class="text-[13px] text-on-surface-variant/80">建立持续的肌肉记忆，追求极致改变</p>
+</div>
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+<!-- Inactive Option 1 -->
+<button class="option-card w-full flex items-center justify-between p-5 rounded-xl bg-white border border-outline-variant hover:border-on-surface-variant/30 transition-colors">
+<div class="text-left">
+<h3 class="font-headline font-bold text-[17px] text-on-surface mb-0.5">每周 3-4 次</h3>
+<p class="text-[13px] text-on-surface-variant/80">平衡工作与自律，柔性推进目标</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-2xl">radio_button_unchecked</span>
+</button>
+<!-- Inactive Option 2 -->
+<button class="option-card w-full flex items-center justify-between p-5 rounded-xl bg-white border border-outline-variant hover:border-on-surface-variant/30 transition-colors">
+<div class="text-left">
+<h3 class="font-headline font-bold text-[17px] text-on-surface mb-0.5">周末</h3>
+<p class="text-[13px] text-on-surface-variant/80">专注深度沉浸，利用大块时间突破</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-2xl">radio_button_unchecked</span>
+</button>
+</div>
+<!-- Insight Block: Lighter feel -->
+<div class="bg-primary-container/30 rounded-2xl p-5 border border-primary/5">
+<div class="flex items-start gap-4">
+<div class="bg-white p-1.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary text-lg">auto_awesome</span>
+</div>
+<div class="pt-0.5">
+<h4 class="font-headline font-bold text-sm text-primary mb-2">智能建议</h4>
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2 text-[12px] text-on-surface-variant">
+<span class="material-symbols-outlined text-sm opacity-60">event_repeat</span>
+<span>建议周期: <span class="font-semibold text-on-surface">21 天</span></span>
+</div>
+<div class="flex items-center gap-2 text-[12px] text-on-surface-variant">
+<span class="material-symbols-outlined text-sm opacity-60">calendar_month</span>
+<span>预计结束: <span class="font-semibold text-on-surface">2024-05-20</span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual Hero: Integrated Bottom -->
+<div class="mt-8 mb-8 rounded-2xl overflow-hidden aspect-[21/7] relative">
+<img class="w-full h-full object-cover" data-alt="misty forest at sunrise with soft golden light rays filtering through ancient trees, serene and minimalist aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaSS6RxF-xrzsBmmCDTALlvlphSbtSgswdb_40iawy9mkMA12EqWNHQM_rBkjHkdW_yjDv7cU8JgCnpdwE5MPRWId07AUg03tRYUupBoPfdE_tolgDFR1rl0u3MkVD9cBGSbQ_qcrjJXTG83FRhCdU7VquLeISX3bTDWXtMY1TNDk6LeuINXDtROL1WGcMpGLNAKQTw4SIvu3kofLmwrsHfdj0cRIqKeL40aoigkyHNu6v8p39PWhQtR7RLUsydu6uLHCjgTE4Jfou"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+<!-- Footer Action -->
+<footer class="mt-auto">
+<button class="w-full py-5 rounded-full bg-primary text-white font-headline font-bold text-[15px] shadow-xl shadow-primary/10 active:scale-[0.98] transition-all duration-200">
+            下一步
+        </button>
+</footer>
+</div>
+</body></html>

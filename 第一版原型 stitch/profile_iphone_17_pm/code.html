@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#a1d1b9",
+                        "on-primary-container": "#9fcfb7",
+                        "tertiary-container": "#6c4b00",
+                        "background": "#f8faf9",
+                        "primary-fixed": "#bcedd4",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#eff1f0",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#b8cbbf",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8faf9",
+                        "on-surface": "#191c1c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1c",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceeed",
+                        "primary": "#134231",
+                        "on-tertiary-container": "#edbd6b",
+                        "outline": "#717974",
+                        "surface-variant": "#e1e3e2",
+                        "on-primary-fixed": "#002115",
+                        "on-tertiary-fixed": "#271900",
+                        "primary-container": "#2d5a47",
+                        "on-secondary-fixed": "#0e1f17",
+                        "tertiary-fixed": "#ffdeaa",
+                        "secondary-container": "#d1e4d8",
+                        "surface-container-high": "#e6e9e8",
+                        "surface-bright": "#f8faf9",
+                        "on-secondary-fixed-variant": "#394b42",
+                        "on-primary-fixed-variant": "#214f3d",
+                        "on-secondary-container": "#55675d",
+                        "inverse-primary": "#a1d1b9",
+                        "surface-container-low": "#f2f4f3",
+                        "inverse-surface": "#2e3131",
+                        "tertiary-fixed-dim": "#efbf6c",
+                        "tertiary": "#4f3600",
+                        "outline-variant": "#c0c8c2",
+                        "secondary": "#516259",
+                        "surface-tint": "#3a6753",
+                        "surface-container-highest": "#e1e3e2",
+                        "surface-dim": "#d8dada",
+                        "on-surface-variant": "#414944",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#5f4100",
+                        "secondary-fixed": "#d4e7db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.5rem",
+                        "3xl": "2rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* iPhone 17 Pro Max Dimensions */
+        body {
+            width: 440px;
+            height: 953px;
+            margin: 0 auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-[#FBFDFB] font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="w-full bg-[#FBFDFB]">
+<div class="flex justify-between items-center px-8 h-20">
+<button class="text-primary-container hover:opacity-60 transition-opacity">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</button>
+<h1 class="font-headline font-extrabold text-lg tracking-tight text-primary">个人中心</h1>
+<button class="text-primary-container hover:opacity-60 transition-opacity">
+<span class="material-symbols-outlined text-2xl">notifications_none</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-8 flex flex-col justify-between py-4">
+<!-- Profile Header Section -->
+<section class="flex flex-col items-center text-center">
+<div class="relative">
+<div class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-white shadow-xl">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy48_IEqoWt8Rabh5XIYwwUUNYxgPnBQ4bb38B0Zg3CYezsxue5ScTmCut0RHDzXytbB7a3LHvP261XkQEJ6kP_4oks3DQxYftPs1hgFLSLmIfBwYMsLC2dOO01Gy1JZSX1X-0kq9ALpFxHAw7RdGCTdRYc7kmEkuTm69XspTH6DqEiZhgZtNi3TV-uvMjAOMb1tAwAwMg_4smwUiFd8DGfgK4cVyZDpNiHP2m14PcLfjUA22zXQl-UQRhaMcxPfi6PgO_CIBEhPmk"/>
+</div>
+<div class="absolute bottom-0 right-0 bg-[#134231] w-7 h-7 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+<span class="material-symbols-outlined text-white text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="mt-3">
+<h2 class="font-headline font-bold text-xl text-on-surface tracking-tight">林木木</h2>
+<p class="text-on-surface-variant/50 text-[10px] font-medium tracking-widest mt-0.5">ID: 88294021</p>
+</div>
+</section>
+<!-- Stats Section -->
+<section class="grid grid-cols-3 gap-3">
+<div class="bg-white py-4 rounded-[2rem] text-center border border-surface-container/40">
+<div class="font-headline font-extrabold text-lg text-primary">12</div>
+<div class="text-[9px] font-bold text-on-surface-variant/40 uppercase tracking-tighter mt-0.5">进行中</div>
+</div>
+<div class="bg-[#134231] py-4 rounded-[2rem] text-center shadow-lg shadow-primary/10">
+<div class="font-headline font-extrabold text-lg text-white">94%</div>
+<div class="text-[9px] font-bold text-white/60 uppercase tracking-tighter mt-0.5">完成率</div>
+</div>
+<div class="bg-white py-4 rounded-[2rem] text-center border border-surface-container/40">
+<div class="font-headline font-extrabold text-lg text-primary">42</div>
+<div class="text-[9px] font-bold text-on-surface-variant/40 uppercase tracking-tighter mt-0.5">连续打卡</div>
+</div>
+</section>
+<!-- Membership Section -->
+<section class="bg-primary/5 rounded-[2.5rem] p-5 border border-primary/10 flex justify-between items-center">
+<div class="flex items-center space-x-4">
+<div class="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white text-xl">diamond</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-sm text-primary">时律会员</h3>
+<p class="text-[10px] text-on-surface-variant/70 mt-0.5">解锁 AI 智能重构高级功能</p>
+</div>
+</div>
+<button class="bg-primary text-white text-[9px] font-bold uppercase tracking-widest px-4 py-2 rounded-full active:scale-95 transition-transform shrink-0">
+                升级
+            </button>
+</section>
+<!-- Achievement & Functional Grid -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-white p-5 rounded-[2.5rem] border border-surface-container/30 flex flex-col items-center text-center space-y-2 aspect-[4/3] justify-center">
+<div class="w-10 h-10 rounded-2xl bg-[#E8F1EC] flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">military_tech</span>
+</div>
+<span class="font-headline font-bold text-xs text-on-surface">成就勋章</span>
+</div>
+<div class="bg-white p-5 rounded-[2.5rem] border border-surface-container/30 flex flex-col items-center text-center space-y-2 aspect-[4/3] justify-center">
+<div class="w-10 h-10 rounded-2xl bg-[#FDF4E5] flex items-center justify-center">
+<span class="material-symbols-outlined text-[#D19224] text-xl">neurology</span>
+</div>
+<span class="font-headline font-bold text-xs text-on-surface">AI 偏好</span>
+</div>
+<div class="bg-white p-5 rounded-[2.5rem] border border-surface-container/30 flex flex-col items-center text-center space-y-2 aspect-[4/3] justify-center">
+<div class="w-10 h-10 rounded-2xl bg-[#F4F4F4] flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">analytics</span>
+</div>
+<span class="font-headline font-bold text-xs text-on-surface">周度报表</span>
+</div>
+<div class="bg-white p-5 rounded-[2.5rem] border border-surface-container/30 flex flex-col items-center text-center space-y-2 aspect-[4/3] justify-center">
+<div class="w-10 h-10 rounded-2xl bg-[#F4F4F4] flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">history</span>
+</div>
+<span class="font-headline font-bold text-xs text-on-surface">历史足迹</span>
+</div>
+</section>
+<!-- Settings List (Simplified for Screen Fit) -->
+<section class="space-y-2">
+<div class="flex items-center justify-between px-6 py-4 bg-white rounded-[2rem] border border-surface-container/20 active:bg-surface-container/10 transition-colors">
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-primary/60 text-xl">person_outline</span>
+<span class="text-xs font-semibold text-on-surface">账户与安全</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+</div>
+<div class="flex items-center justify-between px-6 py-4 bg-white rounded-[2rem] border border-surface-container/20 active:bg-surface-container/10 transition-colors">
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-primary/60 text-xl">help_outline</span>
+<span class="text-xs font-semibold text-on-surface">帮助与反馈</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+</div>
+</section>
+<!-- Logout Button -->
+<button class="w-full py-4 text-error/60 font-bold tracking-[0.2em] uppercase text-[9px] active:scale-95 transition-transform mt-2">
+            退出当前账号
+        </button>
+</main>
+<!-- BottomNavBar -->
+<nav class="h-24 bg-white/80 backdrop-blur-xl border-t border-surface-container/30 flex justify-around items-center px-8 pb-8 rounded-t-[40px] shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
+<div class="flex flex-col items-center justify-center text-on-surface-variant/40 space-y-1">
+<span class="material-symbols-outlined text-2xl">assignment</span>
+<span class="text-[9px] font-bold uppercase tracking-tight">任务</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/40 space-y-1">
+<span class="material-symbols-outlined text-2xl">calendar_today</span>
+<span class="text-[9px] font-bold uppercase tracking-tight">日历</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary space-y-1">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[9px] font-bold uppercase tracking-tight">我的</span>
+</div>
+</nav>
+</body></html>
