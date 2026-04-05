@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+.npm-cache/
 
 # Expo
 .expo/
@@ -38,4 +39,9 @@ yarn-error.*
 
 # generated native folders
 /ios
-/android
+
+# Android build outputs
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
