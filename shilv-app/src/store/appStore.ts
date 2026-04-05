@@ -50,7 +50,6 @@ interface AppState {
   tasks: TaskItem[];
   toggleTask: (id: string) => void;
   ignoreTask: (id: string) => void;
-  regenerateTasks: () => void;
   isRegenerated: boolean;
 
   // Yesterday
@@ -74,6 +73,12 @@ interface AppState {
   ignoreTargetId: string | null;
   openIgnoreModal: (taskId: string) => void;
   closeIgnoreModal: () => void;
+
+  // Regen modal
+  regenModalVisible: boolean;
+  openRegenModal: () => void;
+  closeRegenModal: () => void;
+  confirmRegen: (reason: string) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -132,19 +137,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       ignoreModalVisible: false,
       ignoreTargetId: null,
     })),
-  regenerateTasks: () =>
-    set((s) => {
-      const next = s.isRegenerated
-        ? PRIMARY_TASKS.map((t) => ({ ...t, done: false }))
-        : REGEN_TASKS.map((t) => ({ ...t, done: false }));
-      const note = ADJUSTMENT_NOTES[Math.floor(Math.random() * ADJUSTMENT_NOTES.length)];
-      return {
-        tasks: next,
-        isRegenerated: !s.isRegenerated,
-        adjustmentNote: note,
-        showAdjustment: true,
-      };
-    }),
 
   // ─── Yesterday ────────────────────────────
   yesterdayTasks: YESTERDAY_TASKS.map((t) => ({ ...t })),
@@ -175,4 +167,23 @@ export const useAppStore = create<AppState>((set, get) => ({
   ignoreTargetId: null,
   openIgnoreModal: (taskId) => set({ ignoreModalVisible: true, ignoreTargetId: taskId }),
   closeIgnoreModal: () => set({ ignoreModalVisible: false, ignoreTargetId: null }),
+
+  // ─── Regen Modal ──────────────────────────
+  regenModalVisible: false,
+  openRegenModal: () => set({ regenModalVisible: true }),
+  closeRegenModal: () => set({ regenModalVisible: false }),
+  confirmRegen: (reason) => {
+    const s = get();
+    const next = s.isRegenerated
+      ? PRIMARY_TASKS.map((t) => ({ ...t, done: false }))
+      : REGEN_TASKS.map((t) => ({ ...t, done: false }));
+    const note = ADJUSTMENT_NOTES[Math.floor(Math.random() * ADJUSTMENT_NOTES.length)];
+    set({
+      tasks: next,
+      isRegenerated: !s.isRegenerated,
+      adjustmentNote: note,
+      showAdjustment: true,
+      regenModalVisible: false,
+    });
+  },
 }));

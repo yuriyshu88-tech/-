@@ -3,13 +3,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
 import { PROFILE } from '../mock/data';
 
-const FEATURE_GRID = [
-  { icon: 'trophy', label: '成就勋章', color: '#8FAE9B' },
-  { icon: 'color-palette', label: 'AI 偏好', color: '#E8A74D' },
-  { icon: 'bar-chart', label: '周度报表', color: '#8FAE9B' },
-  { icon: 'time', label: '历史足迹', color: '#5D6661' },
-];
-
 const MENU_ITEMS = [
   { icon: 'person-outline', label: '账户与安全' },
   { icon: 'help-circle-outline', label: '帮助与反馈' },
@@ -64,7 +57,7 @@ export function ProfileScreen() {
             </View>
             <View>
               <Text style={styles.memberTitle}>时律会员</Text>
-              <Text style={styles.memberSub}>解锁 AI 智能重构高级功能</Text>
+              <Text style={styles.memberSub}>解锁更多AI功能</Text>
             </View>
           </View>
           <Pressable
@@ -73,22 +66,6 @@ export function ProfileScreen() {
           >
             <Text style={styles.upgradeBtnText}>升级</Text>
           </Pressable>
-        </View>
-
-        {/* Feature Grid */}
-        <View style={styles.featureGrid}>
-          {FEATURE_GRID.map((item, i) => (
-            <Pressable
-              key={i}
-              style={styles.featureItem}
-              onPress={() => Alert.alert(item.label, '功能演示中')}
-            >
-              <View style={[styles.featureIconWrap, { backgroundColor: item.color + '20' }]}>
-                <Ionicons name={item.icon as any} size={24} color={item.color} />
-              </View>
-              <Text style={styles.featureLabel}>{item.label}</Text>
-            </Pressable>
-          ))}
         </View>
 
         {/* Menu List */}
@@ -265,35 +242,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: '700',
     fontSize: 13,
-  },
-
-  // Feature Grid
-  featureGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 16,
-  },
-  featureItem: {
-    flexBasis: '47%',
-    flexGrow: 1,
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
-    padding: 20,
-    alignItems: 'center',
-    gap: 10,
-  },
-  featureIconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  featureLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.text,
   },
 
   // Menu

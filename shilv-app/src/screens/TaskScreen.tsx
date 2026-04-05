@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
@@ -5,38 +6,29 @@ import { useAppStore } from '../store/appStore';
 import { ProgressBar } from '../components/ProgressBar';
 import { TaskCard } from '../components/TaskCard';
 import { IgnoreReasonModal } from '../components/IgnoreReasonModal';
+import { RegenReasonModal } from '../components/RegenReasonModal';
 
 export function TaskScreen() {
   const goalTitle = useAppStore((s) => s.goalTitle);
   const tasks = useAppStore((s) => s.tasks);
   const toggleTask = useAppStore((s) => s.toggleTask);
   const openIgnoreModal = useAppStore((s) => s.openIgnoreModal);
-  const regenerateTasks = useAppStore((s) => s.regenerateTasks);
+  const openRegenModal = useAppStore((s) => s.openRegenModal);
+  const deleteGoal = useAppStore((s) => s.deleteGoal);
   const triggerAdjustment = useAppStore((s) => s.triggerAdjustment);
+  const showAdjustment = useAppStore((s) => s.showAdjustment);
+  const adjustmentNote = useAppStore((s) => s.adjustmentNote);
+  const dismissAdjustment = useAppStore((s) => s.dismissAdjustment);
 
-  const doneCount = tasks.filter((t) => t.done).length;
   const totalCount = tasks.length;
   const progressPct = Math.round((8 / 21) * 100); // Mock: 8 of 21 days
 
-  const handleRegenerate = () => {
-    Alert.alert('重新生成', '确定要让 AI 重新规划今日任务吗？', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '确定',
-        onPress: () => {
-          regenerateTasks();
-          // Show adjustment note as alert popup
-          setTimeout(() => {
-            const note = useAppStore.getState().adjustmentNote;
-            if (note) {
-              Alert.alert('AI 调整说明', note, [{ text: '确定' }]);
-              useAppStore.getState().dismissAdjustment();
-            }
-          }, 100);
-        },
-      },
-    ]);
-  };
+  // Show AI adjustment alert after regen (useEffect to avoid repeated alerts)
+  useEffect(() => {
+    if (showAdjustment && adjustmentNote) {
+      Alert.alert('AI 调整说明', adjustmentNote, [{ text: '确定', onPress: dismissAdjustment }]);
+    }
+  }, [showAdjustment, adjustmentNote, dismissAdjustment]);
 
   const handleAdjust = () => {
     Alert.alert('需要调整', '语音功能演示中，已模拟触发 AI 调整', [
@@ -44,15 +36,15 @@ export function TaskScreen() {
         text: '好的',
         onPress: () => {
           triggerAdjustment('voice input');
-          setTimeout(() => {
-            const note = useAppStore.getState().adjustmentNote;
-            if (note) {
-              Alert.alert('AI 调整说明', note, [{ text: '确定' }]);
-              useAppStore.getState().dismissAdjustment();
-            }
-          }, 100);
         },
       },
+    ]);
+  };
+
+  const handleDeleteGoal = () => {
+    Alert.alert('删除目标', '确定要删除当前长期目标吗？所有进度将被清除。', [
+      { text: '取消', style: 'cancel' },
+      { text: '删除', style: 'destructive', onPress: deleteGoal },
     ]);
   };
 
@@ -82,10 +74,10 @@ export function TaskScreen() {
               <Ionicons name="calendar-outline" size={14} color={COLORS.subText} />
               <Text style={styles.goalDateText}>始于 04.28</Text>
             </View>
-            <View style={styles.goalDateItem}>
-              <Ionicons name="flag-outline" size={14} color={COLORS.subText} />
-              <Text style={styles.goalDateText}>剩余 18 days</Text>
-            </View>
+            <Pressable style={styles.deleteBtn} onPress={handleDeleteGoal}>
+              <Ionicons name="trash-outline" size={14} color={COLORS.danger} />
+              <Text style={styles.deleteBtnText}>删除目标</Text>
+            </Pressable>
           </View>
         </View>
 
@@ -123,7 +115,7 @@ export function TaskScreen() {
         )}
 
         {/* Regenerate */}
-        <Pressable style={styles.regenBtn} onPress={handleRegenerate}>
+        <Pressable style={styles.regenBtn} onPress={openRegenModal}>
           <Ionicons name="refresh-outline" size={16} color={COLORS.primary} />
           <Text style={styles.regenText}>重新生成今日任务</Text>
         </Pressable>
@@ -141,6 +133,7 @@ export function TaskScreen() {
       </ScrollView>
 
       <IgnoreReasonModal />
+      <RegenReasonModal />
     </View>
   );
 }
@@ -221,6 +214,16 @@ const styles = StyleSheet.create({
   goalDateText: {
     fontSize: 12,
     color: COLORS.subText,
+  },
+  deleteBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  deleteBtnText: {
+    fontSize: 12,
+    color: COLORS.danger,
+    fontWeight: '600',
   },
 
   // Adjust entry

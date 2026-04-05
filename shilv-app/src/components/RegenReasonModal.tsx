@@ -2,14 +2,13 @@ import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-nativ
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
-import { IGNORE_REASONS } from '../mock/data';
+import { REGEN_REASONS } from '../mock/data';
 import { useAppStore } from '../store/appStore';
 
-export function IgnoreReasonModal() {
-  const visible = useAppStore((s) => s.ignoreModalVisible);
-  const targetId = useAppStore((s) => s.ignoreTargetId);
-  const closeModal = useAppStore((s) => s.closeIgnoreModal);
-  const ignoreTask = useAppStore((s) => s.ignoreTask);
+export function RegenReasonModal() {
+  const visible = useAppStore((s) => s.regenModalVisible);
+  const closeModal = useAppStore((s) => s.closeRegenModal);
+  const confirmRegen = useAppStore((s) => s.confirmRegen);
 
   const [selected, setSelected] = useState<string | null>(null);
   const [customText, setCustomText] = useState('');
@@ -17,8 +16,9 @@ export function IgnoreReasonModal() {
   const canSubmit = selected !== null && (selected !== '其他' || customText.trim().length > 0);
 
   const handleSubmit = () => {
-    if (!targetId || !canSubmit) return;
-    ignoreTask(targetId);
+    if (!canSubmit) return;
+    const reason = selected === '其他' ? customText : (selected ?? '');
+    confirmRegen(reason);
     setSelected(null);
     setCustomText('');
   };
@@ -34,15 +34,15 @@ export function IgnoreReasonModal() {
       <View style={styles.overlay}>
         <View style={styles.sheet}>
           <View style={styles.header}>
-            <Text style={styles.title}>忽略原因</Text>
+            <Text style={styles.title}>重新生成原因</Text>
             <Pressable onPress={handleClose} hitSlop={12}>
               <Ionicons name="close" size={24} color={COLORS.subText} />
             </Pressable>
           </View>
-          <Text style={styles.subtitle}>你的反馈将帮助 AI 优化后续任务安排</Text>
+          <Text style={styles.subtitle}>你的反馈将帮助 AI 更好地调整任务</Text>
 
           <View style={styles.options}>
-            {IGNORE_REASONS.map((reason) => {
+            {REGEN_REASONS.map((reason) => {
               const active = selected === reason;
               return (
                 <Pressable
@@ -74,7 +74,7 @@ export function IgnoreReasonModal() {
             disabled={!canSubmit}
             onPress={handleSubmit}
           >
-            <Text style={styles.submitText}>提交</Text>
+            <Text style={styles.submitText}>提交并重新生成</Text>
           </Pressable>
         </View>
       </View>

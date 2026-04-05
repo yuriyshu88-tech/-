@@ -109,32 +109,32 @@ export const CLARIFY_QUESTIONS: ClarifyQuestion[] = [
 
 // ─── Tasks ──────────────────────────────────────────
 export const PRIMARY_TASKS: TaskItem[] = [
-  { id: 't1', title: '粤语常用词汇复习', icon: 'translate', priority: 'HIGH', done: false },
-  { id: 't2', title: '播客精听：香港往事', icon: 'podcast', priority: 'MID', done: false },
-  { id: 't3', title: '模仿影子练习', icon: 'people', priority: 'FOCUS', done: false },
+  { id: 't1', title: 'AI 基础概念认读', icon: 'book', priority: 'HIGH', done: false },
+  { id: 't2', title: '精读机器学习入门文章', icon: 'document-text', priority: 'MID', done: false },
+  { id: 't3', title: '动手实践 Python 数据处理', icon: 'code-slash', priority: 'FOCUS', done: false },
 ];
 
 export const REGEN_TASKS: TaskItem[] = [
-  { id: 'r1', title: '粤语发音基础练习', icon: 'mic', priority: 'HIGH', done: false },
-  { id: 'r2', title: '看一集粤语短剧', icon: 'tv', priority: 'MID', done: false },
-  { id: 'r3', title: '用粤语写日记 5 句', icon: 'create', priority: 'FOCUS', done: false },
+  { id: 'r1', title: '观看 AI 科普视频 20 分钟', icon: 'tv', priority: 'HIGH', done: false },
+  { id: 'r2', title: '整理学习笔记', icon: 'create', priority: 'MID', done: false },
+  { id: 'r3', title: '完成课后练习题', icon: 'checkmark-circle', priority: 'FOCUS', done: false },
 ];
 
 export const YESTERDAY_TASKS: YesterdayTask[] = [
   {
     id: 'y1',
-    title: '每日冥想 20 分钟',
-    icon: 'fitness',
-    category: '个人提升',
+    title: '阅读《深度学习入门》第2章',
+    icon: 'book',
+    category: '阅读',
     subtitle: '原定于昨日 18:00 完成',
     resolved: false,
   },
   {
     id: 'y2',
-    title: '阅读《深向工作》第3章',
-    icon: 'book',
-    category: '阅读',
-    subtitle: '进度：已阅读 60%',
+    title: '完成 Python 基础练习',
+    icon: 'code-slash',
+    category: '实践',
+    subtitle: '进度：已完成 60%',
     resolved: true,
     action: 'done',
   },
@@ -149,6 +149,15 @@ export const IGNORE_REASONS = [
   '其他',
 ] as const;
 
+// ─── Regenerate Reasons ─────────────────────────────
+export const REGEN_REASONS = [
+  '任务太难了',
+  '不够有挑战',
+  '想换个方向',
+  '时间冲突',
+  '其他',
+] as const;
+
 // ─── Plan Result (after clarify) ────────────────────
 export const MOCK_PLAN = {
   totalDays: 21,
@@ -160,9 +169,9 @@ export const MOCK_PLAN = {
     { name: '巩固期', days: '第17-21天', description: '回顾总结与能力巩固', color: '#8FAE9B' },
   ],
   todayTasks: [
-    '完成 30 个粤语高频词认读',
-    '精听粤语播客 15 分钟',
-    '影子跟读训练 20 分钟',
+    'AI 基础概念认读',
+    '精读机器学习入门文章',
+    '动手实践 Python 数据处理',
   ],
 };
 
@@ -189,15 +198,18 @@ function generateCalendarData(): CalendarDayInfo[] {
         ? [
             { title: '清晨冥想', duration: '15 min · 呼吸调节', icon: 'fitness' },
             { title: '核心知识阅读', duration: '45 min · 笔记整理', icon: 'book' },
+            { title: 'AI 概念速记', duration: '20 min · 术语卡片', icon: 'chatbubbles' },
           ]
         : phase === 2
           ? [
-              { title: '粤语对话练习', duration: '30 min · 场景模拟', icon: 'chatbubbles' },
-              { title: '听力精训', duration: '20 min · 播客复述', icon: 'headset' },
+              { title: '模型原理精读', duration: '30 min · 深度理解', icon: 'chatbubbles' },
+              { title: '代码实践训练', duration: '20 min · 动手编码', icon: 'headset' },
+              { title: '论文摘要整理', duration: '15 min · 归纳总结', icon: 'book' },
             ]
           : [
               { title: '综合复习', duration: '40 min · 查漏补缺', icon: 'checkmark-circle' },
-              { title: '实战演练', duration: '30 min · 自由对话', icon: 'people' },
+              { title: '实战演练', duration: '30 min · 项目实操', icon: 'people' },
+              { title: '知识输出', duration: '20 min · 写学习笔记', icon: 'book' },
             ];
 
     data.push({ date: dateStr, phase, completed, tasks });

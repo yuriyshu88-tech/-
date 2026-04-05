@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
 import { useAppStore } from '../store/appStore';
@@ -17,17 +17,17 @@ export function PlanResultScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollPad}>
+      <View style={styles.body}>
         {/* Success Banner */}
         <View style={styles.successBanner}>
-          <Ionicons name="checkmark-circle" size={40} color={COLORS.primary} />
+          <Ionicons name="checkmark-circle" size={32} color={COLORS.primary} />
           <Text style={styles.successTitle}>方案已生成</Text>
           <Text style={styles.successSub}>
             AI 已为「{goalTitle}」定制了专属执行方案
           </Text>
         </View>
 
-        {/* Overview Card */}
+        {/* Overview Stats */}
         <View style={styles.overviewCard}>
           <View style={styles.overviewRow}>
             <View style={styles.overviewItem}>
@@ -53,20 +53,16 @@ export function PlanResultScreen() {
           </View>
         </View>
 
-        {/* Phases */}
-        <Text style={styles.sectionTitle}>阶段分配</Text>
-        {MOCK_PLAN.phases.map((phase, i) => (
-          <View key={i} style={styles.phaseCard}>
-            <View style={[styles.phaseDot, { backgroundColor: phase.color }]} />
-            <View style={styles.phaseContent}>
-              <View style={styles.phaseHeader}>
-                <Text style={styles.phaseName}>{phase.name}</Text>
-                <Text style={styles.phaseDays}>{phase.days}</Text>
-              </View>
-              <Text style={styles.phaseDesc}>{phase.description}</Text>
+        {/* Phases — compact inline */}
+        <View style={styles.phasesRow}>
+          {MOCK_PLAN.phases.map((phase, i) => (
+            <View key={i} style={styles.phaseChip}>
+              <View style={[styles.phaseDot, { backgroundColor: phase.color }]} />
+              <Text style={styles.phaseChipName}>{phase.name}</Text>
+              <Text style={styles.phaseChipDays}>{phase.days}</Text>
             </View>
-          </View>
-        ))}
+          ))}
+        </View>
 
         {/* Today's Tasks */}
         <Text style={styles.sectionTitle}>今日任务预览</Text>
@@ -78,7 +74,7 @@ export function PlanResultScreen() {
             <Text style={styles.taskText}>{task}</Text>
           </View>
         ))}
-      </ScrollView>
+      </View>
 
       {/* CTA */}
       <View style={styles.bottomArea}>
@@ -108,60 +104,56 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.primary,
   },
-  scroll: { flex: 1 },
-  scrollPad: {
+  body: {
+    flex: 1,
     paddingHorizontal: 24,
-    paddingBottom: 16,
+    justifyContent: 'center',
   },
   successBanner: {
     alignItems: 'center',
-    paddingVertical: 24,
-    gap: 8,
+    paddingVertical: 12,
+    gap: 4,
   },
   successTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '800',
     color: COLORS.text,
   },
   successSub: {
-    fontSize: 14,
+    fontSize: 13,
     color: COLORS.subText,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 18,
   },
   overviewCard: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
-    padding: 20,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    padding: 16,
+    marginTop: 12,
+    marginBottom: 12,
   },
   overviewRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 10,
   },
   overviewItem: {
     flex: 1,
     alignItems: 'center',
   },
   overviewValue: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '800',
     color: COLORS.primary,
   },
   overviewLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: COLORS.subText,
     marginTop: 2,
   },
   divider: {
     width: 1,
-    height: 30,
+    height: 24,
     backgroundColor: COLORS.muted,
   },
   dateRow: {
@@ -171,76 +163,70 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   dateText: {
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.subText,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 12,
-  },
-  phaseCard: {
+  phasesRow: {
     flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  phaseChip: {
+    flex: 1,
+    alignItems: 'center',
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
-    padding: 14,
-    marginBottom: 10,
-    gap: 12,
-    alignItems: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    gap: 4,
   },
   phaseDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginTop: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
-  phaseContent: {
-    flex: 1,
-  },
-  phaseHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
-  phaseName: {
-    fontSize: 15,
+  phaseChipName: {
+    fontSize: 13,
     fontWeight: '700',
     color: COLORS.text,
+    textAlign: 'center',
   },
-  phaseDays: {
-    fontSize: 13,
+  phaseChipDays: {
+    fontSize: 11,
     color: COLORS.subText,
+    textAlign: 'center',
   },
-  phaseDesc: {
-    fontSize: 13,
-    color: COLORS.subText,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 8,
   },
   taskPreview: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
-    padding: 14,
-    marginBottom: 8,
-    gap: 12,
+    padding: 12,
+    marginBottom: 6,
+    gap: 10,
   },
   taskNum: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   taskNumText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: COLORS.primary,
   },
   taskText: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     color: COLORS.text,
     fontWeight: '600',
   },
@@ -253,7 +239,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: COLORS.primary,
     borderRadius: RADIUS.lg,
-    paddingVertical: 18,
+    paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,

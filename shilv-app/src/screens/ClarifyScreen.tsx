@@ -104,26 +104,6 @@ export function ClarifyScreen() {
             onChangeText={(t) => setClarifyAnswer(q.id, 'D', t)}
           />
         )}
-
-        {/* Suggestion Card */}
-        {q.suggestion && (
-          <View style={styles.suggestionCard}>
-            <View style={styles.suggestionIcon}>
-              <Ionicons name="sparkles-outline" size={20} color={COLORS.primary} />
-            </View>
-            <View style={styles.suggestionContent}>
-              <Text style={styles.suggestionTitle}>智能建议</Text>
-              <View style={styles.suggestionRow}>
-                <Ionicons name="calendar-outline" size={14} color={COLORS.subText} />
-                <Text style={styles.suggestionText}>建议周期: {q.suggestion.cycle}</Text>
-              </View>
-              <View style={styles.suggestionRow}>
-                <Ionicons name="calendar" size={14} color={COLORS.subText} />
-                <Text style={styles.suggestionText}>预计结束: {q.suggestion.endDate}</Text>
-              </View>
-            </View>
-          </View>
-        )}
       </ScrollView>
 
       {/* Bottom Button */}
@@ -260,41 +240,6 @@ const styles = StyleSheet.create({
     padding: 14,
     fontSize: 15,
     marginBottom: 16,
-  },
-  suggestionCard: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.muted,
-    borderRadius: RADIUS.lg,
-    padding: 16,
-    gap: 12,
-    alignItems: 'flex-start',
-  },
-  suggestionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  suggestionContent: {
-    flex: 1,
-    gap: 4,
-  },
-  suggestionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: COLORS.primary,
-    marginBottom: 2,
-  },
-  suggestionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  suggestionText: {
-    fontSize: 13,
-    color: COLORS.subText,
   },
   bottomArea: {
     paddingHorizontal: 24,

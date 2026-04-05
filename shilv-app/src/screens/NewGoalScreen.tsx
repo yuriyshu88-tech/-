@@ -9,8 +9,7 @@ export function NewGoalScreen() {
   const setRoute = useAppStore((s) => s.setRoute);
   const resetClarify = useAppStore((s) => s.resetClarify);
 
-  const wordCount = goalInput.trim().length;
-  const canSubmit = wordCount > 0;
+  const canSubmit = goalInput.trim().length > 0;
 
   const handleCreate = () => {
     resetClarify();
@@ -35,25 +34,20 @@ export function NewGoalScreen() {
         </View>
 
         <Text style={styles.title}>开始你的长期目标</Text>
-        <Text style={styles.subtitle}>
-          描绘一段旅程，而不是一个任务。请详细说明你想在接下来的几个月中成就什么。
-        </Text>
 
         {/* Text Area */}
         <View style={styles.textAreaWrap}>
           <TextInput
             style={styles.textArea}
-            placeholder="例如：在六个月内掌握自由泳技术，并完成一次1.5公里的公开水域游泳..."
+            placeholder="例如：在1个月内学习完AI基础知识"
             placeholderTextColor={COLORS.subText + '80'}
             value={goalInput}
             onChangeText={setGoalInput}
             multiline
             textAlignVertical="top"
+            blurOnSubmit
+            returnKeyType="done"
           />
-          <View style={styles.wordCountWrap}>
-            <Text style={styles.wordCountLabel}>Tt</Text>
-            <Text style={styles.wordCount}>{wordCount} 词</Text>
-          </View>
         </View>
 
         {/* Voice Button */}
@@ -73,7 +67,6 @@ export function NewGoalScreen() {
           <Text style={styles.ctaText}>创建长期目标</Text>
           <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
         </Pressable>
-        <Text style={styles.footerText}>点击创建即表示你承诺开启这段专注之旅</Text>
       </View>
     </View>
   );
@@ -116,12 +109,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '800',
     color: COLORS.text,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: COLORS.subText,
-    lineHeight: 22,
     marginBottom: 20,
   },
   textAreaWrap: {
@@ -142,25 +129,6 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     lineHeight: 22,
     minHeight: 140,
-  },
-  wordCountWrap: {
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: COLORS.muted,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    gap: 4,
-  },
-  wordCountLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: COLORS.subText,
-  },
-  wordCount: {
-    fontSize: 13,
-    color: COLORS.subText,
   },
   voiceBtn: {
     alignSelf: 'center',
@@ -200,10 +168,5 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: '700',
     fontSize: 17,
-  },
-  footerText: {
-    textAlign: 'center',
-    fontSize: 12,
-    color: COLORS.subText,
   },
 });
