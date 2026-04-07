@@ -1,34 +1,41 @@
+import { useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
 import { useAppStore } from '../store/appStore';
+import { YesterdayIgnoreModal } from '../components/YesterdayIgnoreModal';
 
 const ICON_MAP: Record<string, string> = {
   fitness: 'fitness',
   book: 'book',
+  'code-slash': 'code-slash',
+  'document-text': 'document-text',
 };
 
 export function YesterdayScreen() {
   const yesterdayTasks = useAppStore((s) => s.yesterdayTasks);
   const resolveYesterday = useAppStore((s) => s.resolveYesterday);
   const confirmYesterday = useAppStore((s) => s.confirmYesterday);
+  const fetchYesterdayTasks = useAppStore((s) => s.fetchYesterdayTasks);
+  const openYesterdayIgnoreModal = useAppStore((s) => s.openYesterdayIgnoreModal);
 
-  const allResolved = yesterdayTasks.every((t) => t.resolved);
+  useEffect(() => {
+    fetchYesterdayTasks();
+  }, [fetchYesterdayTasks]);
+
+  const allResolved = yesterdayTasks.length > 0 && yesterdayTasks.every((t) => t.resolved);
 
   return (
     <View style={styles.container}>
-      {/* Header — title only */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>时律</Text>
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollPad}>
-        {/* Title */}
         <Text style={styles.label}>昨日回顾</Text>
         <Text style={styles.title}>先确认一下昨天的进度</Text>
         <View style={styles.divider} />
 
-        {/* Task Cards */}
         {yesterdayTasks.map((task) => {
           const iconName = ICON_MAP[task.icon] ?? 'ellipse';
 
@@ -74,7 +81,7 @@ export function YesterdayScreen() {
                 </Pressable>
                 <Pressable
                   style={styles.ignoreBtn}
-                  onPress={() => resolveYesterday(task.id, 'ignore')}
+                  onPress={() => openYesterdayIgnoreModal(task.id)}
                 >
                   <Ionicons name="close" size={16} color={COLORS.text} />
                   <Text style={styles.ignoreBtnText}>忽略</Text>
@@ -84,7 +91,6 @@ export function YesterdayScreen() {
           );
         })}
 
-        {/* Motivational Quote */}
         <View style={styles.quoteCard}>
           <View style={styles.quoteImagePlaceholder}>
             <Ionicons name="image-outline" size={40} color={COLORS.muted} />
@@ -95,7 +101,6 @@ export function YesterdayScreen() {
         </View>
       </ScrollView>
 
-      {/* CTA */}
       <View style={styles.bottomArea}>
         <Pressable
           style={[styles.ctaBtn, !allResolved && styles.ctaDisabled]}
@@ -105,41 +110,20 @@ export function YesterdayScreen() {
           <Text style={styles.ctaText}>确认并开启今日</Text>
         </Pressable>
       </View>
+
+      <YesterdayIgnoreModal />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  header: {
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg },
+  header: { alignItems: 'center', paddingVertical: 12 },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.primary },
   scroll: { flex: 1 },
-  scrollPad: {
-    paddingHorizontal: 24,
-    paddingBottom: 16,
-  },
-  label: {
-    fontSize: 13,
-    color: COLORS.primary,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.text,
-    marginBottom: 10,
-  },
+  scrollPad: { paddingHorizontal: 24, paddingBottom: 16 },
+  label: { fontSize: 13, color: COLORS.primary, fontWeight: '600', marginBottom: 4 },
+  title: { fontSize: 24, fontWeight: '800', color: COLORS.text, marginBottom: 10 },
   divider: {
     width: 40,
     height: 3,
@@ -170,26 +154,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.subText,
-  },
-  actionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 4,
-  },
-  actionSub: {
-    fontSize: 13,
-    color: COLORS.subText,
-    marginBottom: 14,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
+  categoryText: { fontSize: 12, fontWeight: '600', color: COLORS.subText },
+  actionTitle: { fontSize: 18, fontWeight: '700', color: COLORS.text, marginBottom: 4 },
+  actionSub: { fontSize: 13, color: COLORS.subText, marginBottom: 14 },
+  actionRow: { flexDirection: 'row', gap: 10 },
   doneBtn: {
     flex: 1,
     flexDirection: 'row',
@@ -200,11 +168,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  doneBtnText: {
-    color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 15,
-  },
+  doneBtnText: { color: COLORS.white, fontWeight: '700', fontSize: 15 },
   ignoreBtn: {
     flex: 1,
     flexDirection: 'row',
@@ -217,11 +181,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  ignoreBtnText: {
-    color: COLORS.text,
-    fontWeight: '600',
-    fontSize: 15,
-  },
+  ignoreBtnText: { color: COLORS.text, fontWeight: '600', fontSize: 15 },
   confirmedCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -240,15 +200,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   confirmedContent: { flex: 1 },
-  confirmedTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  confirmedSub: {
-    fontSize: 12,
-    color: COLORS.subText,
-  },
+  confirmedTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text },
+  confirmedSub: { fontSize: 12, color: COLORS.subText },
   checkCircle: {
     width: 32,
     height: 32,
@@ -276,23 +229,13 @@ const styles = StyleSheet.create({
     padding: 16,
     lineHeight: 20,
   },
-  bottomArea: {
-    paddingHorizontal: 24,
-    paddingBottom: 30,
-    paddingTop: 8,
-  },
+  bottomArea: { paddingHorizontal: 24, paddingBottom: 30, paddingTop: 8 },
   ctaBtn: {
     backgroundColor: COLORS.primary,
     borderRadius: RADIUS.lg,
     paddingVertical: 18,
     alignItems: 'center',
   },
-  ctaDisabled: {
-    opacity: 0.4,
-  },
-  ctaText: {
-    color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 17,
-  },
+  ctaDisabled: { opacity: 0.4 },
+  ctaText: { color: COLORS.white, fontWeight: '700', fontSize: 17 },
 });

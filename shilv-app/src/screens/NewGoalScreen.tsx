@@ -1,4 +1,4 @@
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
 import { useAppStore } from '../store/appStore';
@@ -6,28 +6,17 @@ import { useAppStore } from '../store/appStore';
 export function NewGoalScreen() {
   const goalInput = useAppStore((s) => s.goalInput);
   const setGoalInput = useAppStore((s) => s.setGoalInput);
-  const setRoute = useAppStore((s) => s.setRoute);
-  const resetClarify = useAppStore((s) => s.resetClarify);
+  const submitGoal = useAppStore((s) => s.submitGoal);
+  const loading = useAppStore((s) => s.loading);
 
   const canSubmit = goalInput.trim().length > 0;
 
-  const handleCreate = () => {
-    resetClarify();
-    setRoute('clarify');
-  };
-
-  const handleVoice = () => {
-    Alert.alert('语音灵感', '语音功能演示中，暂未接入真实服务');
-  };
-
   return (
     <View style={styles.container}>
-      {/* Header — title only */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>时律</Text>
       </View>
 
-      {/* Content */}
       <View style={styles.content}>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>NEW GOAL</Text>
@@ -35,7 +24,6 @@ export function NewGoalScreen() {
 
         <Text style={styles.title}>开始你的长期目标</Text>
 
-        {/* Text Area */}
         <View style={styles.textAreaWrap}>
           <TextInput
             style={styles.textArea}
@@ -49,23 +37,22 @@ export function NewGoalScreen() {
             returnKeyType="done"
           />
         </View>
-
-        {/* Voice Button */}
-        <Pressable style={styles.voiceBtn} onPress={handleVoice}>
-          <Ionicons name="mic" size={26} color={COLORS.text} />
-        </Pressable>
-        <Text style={styles.voiceHint}>点击开启语音灵感</Text>
       </View>
 
-      {/* CTA */}
       <View style={styles.bottomArea}>
         <Pressable
-          style={[styles.ctaBtn, !canSubmit && styles.ctaDisabled]}
-          disabled={!canSubmit}
-          onPress={handleCreate}
+          style={[styles.ctaBtn, (!canSubmit || loading) && styles.ctaDisabled]}
+          disabled={!canSubmit || loading}
+          onPress={submitGoal}
         >
-          <Text style={styles.ctaText}>创建长期目标</Text>
-          <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
+          {loading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <>
+              <Text style={styles.ctaText}>创建长期目标</Text>
+              <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
+            </>
+          )}
         </Pressable>
       </View>
     </View>
@@ -73,24 +60,10 @@ export function NewGoalScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  header: {
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg },
+  header: { alignItems: 'center', paddingVertical: 12 },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.primary },
+  content: { flex: 1, paddingHorizontal: 24, paddingTop: 16 },
   badge: {
     alignSelf: 'flex-start',
     backgroundColor: COLORS.primaryLight,
@@ -99,18 +72,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     marginBottom: 12,
   },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.primary,
-    letterSpacing: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: COLORS.text,
-    marginBottom: 20,
-  },
+  badgeText: { fontSize: 11, fontWeight: '700', color: COLORS.primary, letterSpacing: 1 },
+  title: { fontSize: 28, fontWeight: '800', color: COLORS.text, marginBottom: 20 },
   textAreaWrap: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.xl,
@@ -130,27 +93,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     minHeight: 140,
   },
-  voiceBtn: {
-    alignSelf: 'center',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: COLORS.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  voiceHint: {
-    textAlign: 'center',
-    fontSize: 13,
-    color: COLORS.primary,
-    fontWeight: '600',
-    marginBottom: 12,
-  },
-  bottomArea: {
-    paddingHorizontal: 24,
-    paddingBottom: 30,
-  },
+  bottomArea: { paddingHorizontal: 24, paddingBottom: 30 },
   ctaBtn: {
     flexDirection: 'row',
     backgroundColor: COLORS.primary,
@@ -161,12 +104,6 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 10,
   },
-  ctaDisabled: {
-    opacity: 0.4,
-  },
-  ctaText: {
-    color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 17,
-  },
+  ctaDisabled: { opacity: 0.4 },
+  ctaText: { color: COLORS.white, fontWeight: '700', fontSize: 17 },
 });

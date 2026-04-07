@@ -8,7 +8,8 @@ import { useAppStore } from '../store/appStore';
 export function RegenReasonModal() {
   const visible = useAppStore((s) => s.regenModalVisible);
   const closeModal = useAppStore((s) => s.closeRegenModal);
-  const confirmRegen = useAppStore((s) => s.confirmRegen);
+  const submitRegen = useAppStore((s) => s.submitRegen);
+  const loading = useAppStore((s) => s.loading);
 
   const [selected, setSelected] = useState<string | null>(null);
   const [customText, setCustomText] = useState('');
@@ -17,8 +18,7 @@ export function RegenReasonModal() {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    const reason = selected === '其他' ? customText : (selected ?? '');
-    confirmRegen(reason);
+    submitRegen(selected!, selected === '其他' ? customText.trim() : undefined);
     setSelected(null);
     setCustomText('');
   };
@@ -70,8 +70,8 @@ export function RegenReasonModal() {
           )}
 
           <Pressable
-            style={[styles.submitBtn, !canSubmit && styles.disabled]}
-            disabled={!canSubmit}
+            style={[styles.submitBtn, (!canSubmit || loading) && styles.disabled]}
+            disabled={!canSubmit || loading}
             onPress={handleSubmit}
           >
             <Text style={styles.submitText}>提交并重新生成</Text>
@@ -83,11 +83,7 @@ export function RegenReasonModal() {
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-  },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
   sheet: {
     backgroundColor: COLORS.bg,
     borderTopLeftRadius: 24,
@@ -101,20 +97,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: COLORS.subText,
-    marginBottom: 16,
-  },
-  options: {
-    gap: 8,
-    marginBottom: 12,
-  },
+  title: { fontSize: 20, fontWeight: '700', color: COLORS.text },
+  subtitle: { fontSize: 13, color: COLORS.subText, marginBottom: 16 },
+  options: { gap: 8, marginBottom: 12 },
   option: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -129,14 +114,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.primary,
   },
-  optionText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.text,
-  },
-  optionTextActive: {
-    color: COLORS.primary,
-  },
+  optionText: { fontSize: 15, fontWeight: '600', color: COLORS.text },
+  optionTextActive: { color: COLORS.primary },
   input: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
@@ -153,12 +132,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4,
   },
-  disabled: {
-    opacity: 0.4,
-  },
-  submitText: {
-    color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 16,
-  },
+  disabled: { opacity: 0.4 },
+  submitText: { color: COLORS.white, fontWeight: '700', fontSize: 16 },
 });

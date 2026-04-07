@@ -10,12 +10,13 @@ import { TaskScreen } from './src/screens/TaskScreen';
 import { YesterdayScreen } from './src/screens/YesterdayScreen';
 import { CalendarScreen } from './src/screens/CalendarScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
+import { RegisterScreen } from './src/screens/RegisterScreen';
 
 export default function App() {
   const route = useAppStore((s) => s.route);
   const tab = useAppStore((s) => s.tab);
 
-  // Screens without bottom tab bar
   if (route === 'splash') {
     return (
       <AppFrame>
@@ -52,6 +53,22 @@ export default function App() {
     return (
       <AppFrame>
         <YesterdayScreen />
+      </AppFrame>
+    );
+  }
+
+  if (route === 'login') {
+    return (
+      <AppFrame>
+        <LoginScreen />
+      </AppFrame>
+    );
+  }
+
+  if (route === 'register') {
+    return (
+      <AppFrame>
+        <RegisterScreen />
       </AppFrame>
     );
   }

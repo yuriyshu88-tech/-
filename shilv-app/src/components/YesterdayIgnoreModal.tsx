@@ -5,10 +5,11 @@ import { COLORS, RADIUS } from '../theme/colors';
 import { IGNORE_REASONS } from '../mock/data';
 import { useAppStore } from '../store/appStore';
 
-export function IgnoreReasonModal() {
-  const visible = useAppStore((s) => s.ignoreModalVisible);
-  const closeModal = useAppStore((s) => s.closeIgnoreModal);
-  const submitIgnore = useAppStore((s) => s.submitIgnore);
+export function YesterdayIgnoreModal() {
+  const visible = useAppStore((s) => s.yesterdayIgnoreModalVisible);
+  const targetId = useAppStore((s) => s.yesterdayIgnoreTargetId);
+  const closeModal = useAppStore((s) => s.closeYesterdayIgnoreModal);
+  const resolveYesterday = useAppStore((s) => s.resolveYesterday);
 
   const [selected, setSelected] = useState<string | null>(null);
   const [customText, setCustomText] = useState('');
@@ -16,8 +17,9 @@ export function IgnoreReasonModal() {
   const canSubmit = selected !== null && (selected !== '其他' || customText.trim().length > 0);
 
   const handleSubmit = () => {
-    if (!canSubmit) return;
-    submitIgnore(selected!, selected === '其他' ? customText.trim() : undefined);
+    if (!targetId || !canSubmit) return;
+    const reason = selected === '其他' ? customText.trim() : (selected ?? '');
+    resolveYesterday(targetId, 'ignore', reason);
     setSelected(null);
     setCustomText('');
   };
@@ -38,7 +40,7 @@ export function IgnoreReasonModal() {
               <Ionicons name="close" size={24} color={COLORS.subText} />
             </Pressable>
           </View>
-          <Text style={styles.subtitle}>你的反馈将帮助 AI 优化后续任务安排</Text>
+          <Text style={styles.subtitle}>请说明忽略这个任务的原因</Text>
 
           <View style={styles.options}>
             {IGNORE_REASONS.map((reason) => {

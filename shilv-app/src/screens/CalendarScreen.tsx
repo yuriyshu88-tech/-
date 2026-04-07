@@ -1,34 +1,33 @@
+import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
 import { useAppStore } from '../store/appStore';
 import { ProgressBar } from '../components/ProgressBar';
-import { CALENDAR_DATA, PHASES } from '../mock/data';
 
 const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
 
-function getPhaseColor(phase: number): string {
-  if (phase === 1) return PHASES[0].color;
-  if (phase === 2) return PHASES[1].color;
-  return PHASES[2].color;
+function getPhaseColor(phase: number, phases: { color: string }[]): string {
+  return phases[phase - 1]?.color ?? COLORS.muted;
 }
 
-function getCalendarGrid() {
-  // Build a May 2024 grid
-  // May 1, 2024 = Wednesday (index 2 in Mon-based week)
-  const firstDayOfWeek = 2; // Wednesday
-  const daysInMonth = 31;
+function getCalendarGrid(year: number, month: number) {
+  const firstDay = new Date(year, month - 1, 1);
+  // Monday = 0, Sunday = 6
+  let dayOfWeek = firstDay.getDay() - 1;
+  if (dayOfWeek < 0) dayOfWeek = 6;
+
+  const daysInMonth = new Date(year, month, 0).getDate();
 
   const grid: (null | { day: number; date: string })[][] = [];
   let week: (null | { day: number; date: string })[] = [];
 
-  // Pad start
-  for (let i = 0; i < firstDayOfWeek; i++) {
+  for (let i = 0; i < dayOfWeek; i++) {
     week.push(null);
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `2024-05-${String(d).padStart(2, '0')}`;
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     week.push({ day: d, date: dateStr });
     if (week.length === 7) {
       grid.push(week);
@@ -44,61 +43,74 @@ function getCalendarGrid() {
 }
 
 export function CalendarScreen() {
+  const calendarData = useAppStore((s) => s.calendarData);
+  const calendarYear = useAppStore((s) => s.calendarYear);
+  const calendarMonth = useAppStore((s) => s.calendarMonth);
   const selectedDate = useAppStore((s) => s.selectedDate);
-  const setSelectedDate = useAppStore((s) => s.setSelectedDate);
+  const selectedDayDetail = useAppStore((s) => s.selectedDayDetail);
+  const fetchCalendarMonth = useAppStore((s) => s.fetchCalendarMonth);
+  const fetchCalendarDay = useAppStore((s) => s.fetchCalendarDay);
+  const prevMonth = useAppStore((s) => s.prevMonth);
+  const nextMonth = useAppStore((s) => s.nextMonth);
 
-  const calendarGrid = getCalendarGrid();
-  const completedCount = CALENDAR_DATA.filter((d) => d.completed).length;
-  const totalDays = 21;
+  useEffect(() => {
+    fetchCalendarMonth(calendarYear, calendarMonth);
+  }, [fetchCalendarMonth, calendarYear, calendarMonth]);
 
-  const selectedDayData = CALENDAR_DATA.find((d) => d.date === selectedDate);
-  const selectedDay = selectedDate ? parseInt(selectedDate.split('-')[2], 10) : 0;
-  const selectedPhaseInfo = selectedDayData
-    ? PHASES[selectedDayData.phase - 1]
-    : null;
+  const calendarGrid = useMemo(
+    () => getCalendarGrid(calendarYear, calendarMonth),
+    [calendarYear, calendarMonth],
+  );
 
-  const calendarLookup = new Map(CALENDAR_DATA.map((d) => [d.date, d]));
+  const phases = calendarData?.phases ?? [];
+  const days = calendarData?.days ?? [];
+  const progress = calendarData?.progress;
+  const completedCount = progress?.completed_days ?? 0;
+  const totalDays = progress?.total_days ?? 0;
+
+  const dayLookup = useMemo(
+    () => new Map(days.map((d) => [d.date, d])),
+    [days],
+  );
+
+  const handleSelectDate = (date: string) => {
+    fetchCalendarDay(date);
+  };
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      {/* Header — title only */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>时律</Text>
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollPad}>
-        {/* Progress */}
         <View style={styles.progressSection}>
           <Text style={styles.progressTitle}>本月进度</Text>
           <Text style={styles.progressCount}>
             {completedCount} / {totalDays} 天已完成
           </Text>
         </View>
-        <ProgressBar progress={completedCount / totalDays} height={10} />
+        <ProgressBar progress={totalDays > 0 ? completedCount / totalDays : 0} height={10} />
 
-        {/* Calendar */}
         <View style={styles.calendarCard}>
           <View style={styles.calendarHeader}>
-            <Text style={styles.monthTitle}>2024年 5月</Text>
+            <Text style={styles.monthTitle}>{calendarYear}年 {calendarMonth}月</Text>
             <View style={styles.navBtns}>
-              <Pressable hitSlop={8}>
+              <Pressable hitSlop={8} onPress={prevMonth}>
                 <Ionicons name="chevron-back" size={20} color={COLORS.subText} />
               </Pressable>
-              <Pressable hitSlop={8}>
+              <Pressable hitSlop={8} onPress={nextMonth}>
                 <Ionicons name="chevron-forward" size={20} color={COLORS.subText} />
               </Pressable>
             </View>
           </View>
 
-          {/* Weekday Headers */}
           <View style={styles.weekRow}>
             {WEEKDAYS.map((d) => (
               <Text key={d} style={styles.weekDay}>{d}</Text>
             ))}
           </View>
 
-          {/* Day Grid */}
           {calendarGrid.map((week, wi) => (
             <View key={wi} style={styles.weekRow}>
               {week.map((cell, ci) => {
@@ -106,11 +118,11 @@ export function CalendarScreen() {
                   return <View key={ci} style={styles.dayCell} />;
                 }
 
-                const dayData = calendarLookup.get(cell.date);
+                const dayData = dayLookup.get(cell.date);
                 const isSelected = cell.date === selectedDate;
                 const isInPlan = !!dayData;
                 const isCompleted = dayData?.completed ?? false;
-                const phaseColor = dayData ? getPhaseColor(dayData.phase) : COLORS.muted;
+                const phaseColor = dayData ? getPhaseColor(dayData.phase, phases) : COLORS.muted;
 
                 let cellBg: string = COLORS.transparent;
                 let textColor: string = COLORS.subText;
@@ -142,7 +154,7 @@ export function CalendarScreen() {
                         borderWidth: isSelected ? 2 : borderColor !== COLORS.transparent ? 1 : 0,
                       },
                     ]}
-                    onPress={() => setSelectedDate(cell.date)}
+                    onPress={() => handleSelectDate(cell.date)}
                   >
                     <Text style={[styles.dayText, { color: textColor }]}>
                       {cell.day}
@@ -153,30 +165,30 @@ export function CalendarScreen() {
             </View>
           ))}
 
-          {/* Legend */}
-          <View style={styles.legend}>
-            {PHASES.map((p) => (
-              <View key={p.name} style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: p.color }]} />
-                <Text style={styles.legendText}>{p.label}</Text>
-              </View>
-            ))}
-          </View>
+          {phases.length > 0 && (
+            <View style={styles.legend}>
+              {phases.map((p) => (
+                <View key={p.name} style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: p.color }]} />
+                  <Text style={styles.legendText}>{p.label}</Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
 
-        {/* Date Detail — only show tasks for today and past (completed) dates */}
-        {selectedDayData && selectedDayData.completed ? (
+        {selectedDayDetail ? (
           <>
             <View style={styles.detailHeader}>
               <Text style={styles.detailDate}>
-                5月{selectedDay}日
+                {calendarMonth}月{parseInt(selectedDayDetail.date.split('-')[2], 10)}日
               </Text>
               <Text style={styles.detailPhase}>
-                {selectedPhaseInfo?.label}期 PHASE {selectedDayData.phase}
+                {selectedDayDetail.phase_name} PHASE {selectedDayDetail.phase_number}
               </Text>
             </View>
 
-            {selectedDayData.tasks.map((task, i) => {
+            {selectedDayDetail.tasks.map((task, i) => {
               const iconName = (
                 { fitness: 'fitness', book: 'book', chatbubbles: 'chatbubbles', headset: 'headset', 'checkmark-circle': 'checkmark-circle', people: 'people' } as Record<string, string>
               )[task.icon] ?? 'ellipse';
@@ -195,59 +207,30 @@ export function CalendarScreen() {
               );
             })}
           </>
-        ) : selectedDayData ? (
+        ) : selectedDate ? (
           <View style={styles.emptyDetail}>
-            <Text style={styles.detailDate}>5月{selectedDay}日</Text>
-            <Text style={styles.emptyText}>任务将在当天解锁</Text>
+            <Text style={styles.emptyText}>点击日期查看详情</Text>
           </View>
-        ) : (
-          <View style={styles.emptyDetail}>
-            <Text style={styles.emptyText}>暂无任务</Text>
-          </View>
-        )}
+        ) : null}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  header: {
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg },
+  header: { alignItems: 'center', paddingVertical: 12 },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.primary },
   scroll: { flex: 1 },
-  scrollPad: {
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
-
-  // Progress
+  scrollPad: { paddingHorizontal: 20, paddingBottom: 16 },
   progressSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'baseline',
     marginBottom: 10,
   },
-  progressTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: COLORS.text,
-  },
-  progressCount: {
-    fontSize: 13,
-    color: COLORS.subText,
-  },
-
-  // Calendar Card
+  progressTitle: { fontSize: 22, fontWeight: '800', color: COLORS.text },
+  progressCount: { fontSize: 13, color: COLORS.subText },
   calendarCard: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
@@ -261,19 +244,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
   },
-  monthTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  navBtns: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  weekRow: {
-    flexDirection: 'row',
-    marginBottom: 4,
-  },
+  monthTitle: { fontSize: 17, fontWeight: '700', color: COLORS.text },
+  navBtns: { flexDirection: 'row', gap: 12 },
+  weekRow: { flexDirection: 'row', marginBottom: 4 },
   weekDay: {
     flex: 1,
     textAlign: 'center',
@@ -290,43 +263,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     margin: 2,
   },
-  dayText: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  legend: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
-    marginTop: 12,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  legendText: {
-    fontSize: 12,
-    color: COLORS.subText,
-  },
-
-  // Detail
+  dayText: { fontSize: 14, fontWeight: '700' },
+  legend: { flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 12 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
+  legendText: { fontSize: 12, color: COLORS.subText },
   detailHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 8,
     marginBottom: 12,
   },
-  detailDate: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: COLORS.text,
-  },
+  detailDate: { fontSize: 20, fontWeight: '800', color: COLORS.text },
   detailPhase: {
     fontSize: 13,
     color: COLORS.subText,
@@ -351,21 +299,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   detailContent: { flex: 1 },
-  detailTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  detailSub: {
-    fontSize: 12,
-    color: COLORS.subText,
-  },
-  emptyDetail: {
-    padding: 30,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 14,
-    color: COLORS.subText,
-  },
+  detailTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text },
+  detailSub: { fontSize: 12, color: COLORS.subText },
+  emptyDetail: { padding: 30, alignItems: 'center' },
+  emptyText: { fontSize: 14, color: COLORS.subText },
 });

@@ -1,36 +1,24 @@
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
 import { useAppStore } from '../store/appStore';
-import { CLARIFY_QUESTIONS } from '../mock/data';
 import { ProgressBar } from '../components/ProgressBar';
 
 export function ClarifyScreen() {
   const step = useAppStore((s) => s.clarifyStep);
-  const answers = useAppStore((s) => s.clarifyAnswers);
-  const setClarifyAnswer = useAppStore((s) => s.setClarifyAnswer);
-  const nextStep = useAppStore((s) => s.nextClarifyStep);
+  const question = useAppStore((s) => s.currentQuestion);
+  const selectedOption = useAppStore((s) => s.clarifySelectedOption);
+  const customText = useAppStore((s) => s.clarifyCustomText);
+  const setClarifyOption = useAppStore((s) => s.setClarifyOption);
+  const setClarifyCustomText = useAppStore((s) => s.setClarifyCustomText);
+  const submitClarifyAnswer = useAppStore((s) => s.submitClarifyAnswer);
   const prevStep = useAppStore((s) => s.prevClarifyStep);
   const setRoute = useAppStore((s) => s.setRoute);
-  const commitGoal = useAppStore((s) => s.commitGoal);
-
-  const q = CLARIFY_QUESTIONS[step];
-  const answer = answers[q.id];
-  const selectedOption = answer?.option ?? null;
-  const customText = answer?.custom ?? '';
-  const isLast = step === CLARIFY_QUESTIONS.length - 1;
+  const loading = useAppStore((s) => s.loading);
 
   const isCustom = selectedOption === 'D';
   const canContinue = selectedOption !== null && (!isCustom || customText.trim().length > 0);
-
-  const handleNext = () => {
-    if (isLast) {
-      commitGoal();
-      setRoute('planResult');
-    } else {
-      nextStep();
-    }
-  };
+  const isLast = step === 4;
 
   const handleBack = () => {
     if (step > 0) {
@@ -41,11 +29,17 @@ export function ClarifyScreen() {
   };
 
   const stepLabel = String(step + 1).padStart(2, '0');
-  const totalLabel = String(CLARIFY_QUESTIONS.length).padStart(2, '0');
+
+  if (!question) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Pressable hitSlop={12} onPress={handleBack}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
@@ -54,32 +48,29 @@ export function ClarifyScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      {/* Progress */}
       <View style={styles.progressRow}>
         <View style={styles.stepRow}>
           <Text style={styles.stepCurrent}>{stepLabel}</Text>
-          <Text style={styles.stepTotal}> / {totalLabel}</Text>
+          <Text style={styles.stepTotal}> / 05</Text>
         </View>
         <Text style={styles.aiLabel}>AI QUESTIONNAIRE</Text>
       </View>
       <View style={styles.progressBarWrap}>
-        <ProgressBar progress={(step + 1) / CLARIFY_QUESTIONS.length} height={3} />
+        <ProgressBar progress={(step + 1) / 5} height={3} />
       </View>
 
       <ScrollView style={styles.scrollContent} contentContainerStyle={styles.scrollPad}>
-        {/* Question */}
-        <Text style={styles.questionTitle}>{q.title}</Text>
-        <Text style={styles.questionDesc}>{q.description}</Text>
+        <Text style={styles.questionTitle}>{question.title}</Text>
+        <Text style={styles.questionDesc}>{question.description}</Text>
 
-        {/* Options */}
         <View style={styles.options}>
-          {q.options.map((opt) => {
+          {question.options.map((opt) => {
             const active = selectedOption === opt.id;
             return (
               <Pressable
                 key={opt.id}
                 style={[styles.optionCard, active && styles.optionActive]}
-                onPress={() => setClarifyAnswer(q.id, opt.id, customText)}
+                onPress={() => setClarifyOption(opt.id)}
               >
                 <View style={styles.optionContent}>
                   <Text style={[styles.optionLabel, active && styles.optionLabelActive]}>
@@ -95,25 +86,27 @@ export function ClarifyScreen() {
           })}
         </View>
 
-        {/* Custom input if D selected */}
         {isCustom && (
           <TextInput
             style={styles.customInput}
             placeholder="请输入你的想法..."
             value={customText}
-            onChangeText={(t) => setClarifyAnswer(q.id, 'D', t)}
+            onChangeText={setClarifyCustomText}
           />
         )}
       </ScrollView>
 
-      {/* Bottom Button */}
       <View style={styles.bottomArea}>
         <Pressable
-          style={[styles.ctaBtn, !canContinue && styles.ctaDisabled]}
-          disabled={!canContinue}
-          onPress={handleNext}
+          style={[styles.ctaBtn, (!canContinue || loading) && styles.ctaDisabled]}
+          disabled={!canContinue || loading}
+          onPress={submitClarifyAnswer}
         >
-          <Text style={styles.ctaText}>{isLast ? '提交并生成方案' : '下一题'}</Text>
+          {loading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <Text style={styles.ctaText}>{isLast ? '提交并生成方案' : '下一题'}</Text>
+          )}
         </Pressable>
       </View>
     </View>
@@ -121,10 +114,7 @@ export function ClarifyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -132,11 +122,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.primary },
   progressRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -144,53 +130,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     marginBottom: 8,
   },
-  stepRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  stepCurrent: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: COLORS.text,
-  },
-  stepTotal: {
-    fontSize: 16,
-    color: COLORS.subText,
-    fontWeight: '500',
-  },
-  aiLabel: {
-    fontSize: 11,
-    color: COLORS.subText,
-    fontWeight: '600',
-    letterSpacing: 1.5,
-  },
-  progressBarWrap: {
-    paddingHorizontal: 24,
-    marginBottom: 20,
-  },
-  scrollContent: {
-    flex: 1,
-  },
-  scrollPad: {
-    paddingHorizontal: 24,
-    paddingBottom: 16,
-  },
-  questionTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.text,
-    marginBottom: 8,
-  },
-  questionDesc: {
-    fontSize: 14,
-    color: COLORS.subText,
-    lineHeight: 20,
-    marginBottom: 20,
-  },
-  options: {
-    gap: 10,
-    marginBottom: 16,
-  },
+  stepRow: { flexDirection: 'row', alignItems: 'baseline' },
+  stepCurrent: { fontSize: 32, fontWeight: '800', color: COLORS.text },
+  stepTotal: { fontSize: 16, color: COLORS.subText, fontWeight: '500' },
+  aiLabel: { fontSize: 11, color: COLORS.subText, fontWeight: '600', letterSpacing: 1.5 },
+  progressBarWrap: { paddingHorizontal: 24, marginBottom: 20 },
+  scrollContent: { flex: 1 },
+  scrollPad: { paddingHorizontal: 24, paddingBottom: 16 },
+  questionTitle: { fontSize: 24, fontWeight: '800', color: COLORS.text, marginBottom: 8 },
+  questionDesc: { fontSize: 14, color: COLORS.subText, lineHeight: 20, marginBottom: 20 },
+  options: { gap: 10, marginBottom: 16 },
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -200,26 +149,11 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: 'transparent',
   },
-  optionActive: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primaryLight,
-  },
-  optionContent: {
-    flex: 1,
-  },
-  optionLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 2,
-  },
-  optionLabelActive: {
-    color: COLORS.primary,
-  },
-  optionDesc: {
-    fontSize: 13,
-    color: COLORS.subText,
-  },
+  optionActive: { borderColor: COLORS.primary, backgroundColor: COLORS.primaryLight },
+  optionContent: { flex: 1 },
+  optionLabel: { fontSize: 16, fontWeight: '700', color: COLORS.text, marginBottom: 2 },
+  optionLabelActive: { color: COLORS.primary },
+  optionDesc: { fontSize: 13, color: COLORS.subText },
   radio: {
     width: 26,
     height: 26,
@@ -230,10 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 12,
   },
-  radioActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
+  radioActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   customInput: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.md,
@@ -241,23 +172,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 16,
   },
-  bottomArea: {
-    paddingHorizontal: 24,
-    paddingBottom: 30,
-    paddingTop: 8,
-  },
+  bottomArea: { paddingHorizontal: 24, paddingBottom: 30, paddingTop: 8 },
   ctaBtn: {
     backgroundColor: COLORS.primary,
     borderRadius: RADIUS.pill,
     paddingVertical: 16,
     alignItems: 'center',
   },
-  ctaDisabled: {
-    opacity: 0.4,
-  },
-  ctaText: {
-    color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 16,
-  },
+  ctaDisabled: { opacity: 0.4 },
+  ctaText: { color: COLORS.white, fontWeight: '700', fontSize: 16 },
 });

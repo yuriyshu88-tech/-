@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, RADIUS } from '../theme/colors';
-import { TaskItem } from '../mock/data';
+import type { TaskItem } from '../api/types';
 
 interface TaskCardProps {
   task: TaskItem;
